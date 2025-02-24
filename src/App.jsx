@@ -3,8 +3,10 @@ import './App.css';
 
 function App() {
   const [breeds, setBreeds] = useState([]);
-  const [selectedBreed, setSelectedBreed] = useState('');
-  const [breedImage, setBreedImage] = useState('');
+  const [selectedBreedOne, setSelectedBreedOne] = useState('');
+  const [selectedBreedTwo, setSelectedBreedTwo] = useState('');
+  const [breedOneImage, setBreedOneImage] = useState('');
+  const [breedTwoImage, setBreedTwoImage] = useState('');
 
   useEffect(() => {
     fetch('https://dog.ceo/api/breeds/list/all')
@@ -13,14 +15,27 @@ function App() {
       .catch((error) => console.error('Error fetching breeds:', error));
   }, []);
 
-  const handleBreedChange = (event) => {
+  const handleBreedOneChange = (event) => {
     const breed = event.target.value;
-    setSelectedBreed(breed);
+    setSelectedBreedOne(breed);
     if (breed) {
       fetch(`https://dog.ceo/api/breed/${breed}/images/random`)
         .then((response) => response.json())
         .then((data) => {
-          setBreedImage(data.message);
+          setBreedOneImage(data.message);
+        })
+        .catch((error) => console.error('Error fetching breed image:', error));
+    }
+  };
+
+  const handleBreedTwoChange = (event) => {
+    const breed = event.target.value;
+    setSelectedBreedTwo(breed);
+    if (breed) {
+      fetch(`https://dog.ceo/api/breed/${breed}/images/random`)
+        .then((response) => response.json())
+        .then((data) => {
+          setBreedTwoImage(data.message);
         })
         .catch((error) => console.error('Error fetching breed image:', error));
     }
@@ -28,7 +43,7 @@ function App() {
 
   return (
     <>
-      <select onChange={handleBreedChange} value={selectedBreed}>
+      <select onChange={handleBreedOneChange} value={selectedBreedOne}>
         <option value=''>Select a breed</option>
         {breeds.map((breed) => (
           <option key={breed} value={breed}>
@@ -36,10 +51,25 @@ function App() {
           </option>
         ))}
       </select>
-      {breedImage && (
+      {breedOneImage && (
         <div>
-          <h2>{selectedBreed}</h2>
-          <img src={breedImage} alt={selectedBreed} />
+          <h2>{selectedBreedOne}</h2>
+          <img src={breedOneImage} alt={selectedBreedOne} />
+        </div>
+      )}
+
+      <select onChange={handleBreedTwoChange} value={selectedBreedTwo}>
+        <option value=''>Select a breed</option>
+        {breeds.map((breed) => (
+          <option key={breed} value={breed}>
+            {breed}
+          </option>
+        ))}
+      </select>
+      {breedTwoImage && (
+        <div>
+          <h2>{selectedBreedTwo}</h2>
+          <img src={breedTwoImage} alt={selectedBreedTwo} />
         </div>
       )}
     </>
