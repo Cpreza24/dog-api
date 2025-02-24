@@ -1,35 +1,49 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect } from 'react';
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [breeds, setBreeds] = useState([]);
+  const [selectedBreed, setSelectedBreed] = useState('');
+  const [breedImage, setBreedImage] = useState('');
+
+  useEffect(() => {
+    fetch('https://dog.ceo/api/breeds/list/all')
+      .then((response) => response.json())
+      .then((data) => setBreeds(Object.keys(data.message)))
+      .catch((error) => console.error('Error fetching breeds:', error));
+  }, []);
+
+  const handleBreedChange = (event) => {
+    const breed = event.target.value;
+    setSelectedBreed(breed);
+    if (breed) {
+      fetch(`https://dog.ceo/api/breed/${breed}/images/random`)
+        .then((response) => response.json())
+        .then((data) => {
+          setBreedImage(data.message);
+        })
+        .catch((error) => console.error('Error fetching breed image:', error));
+    }
+  };
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <select onChange={handleBreedChange} value={selectedBreed}>
+        <option value=''>Select a breed</option>
+        {breeds.map((breed) => (
+          <option key={breed} value={breed}>
+            {breed}
+          </option>
+        ))}
+      </select>
+      {breedImage && (
+        <div>
+          <h2>{selectedBreed}</h2>
+          <img src={breedImage} alt={selectedBreed} />
+        </div>
+      )}
     </>
-  )
+  );
 }
 
-export default App
+export default App;
